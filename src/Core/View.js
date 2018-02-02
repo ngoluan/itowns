@@ -6,6 +6,8 @@ import c3DEngine from '../Renderer/c3DEngine';
 import { STRATEGY_MIN_NETWORK_TRAFFIC } from './Layer/LayerUpdateStrategy';
 import { GeometryLayer, Layer, defineLayerProperty } from './Layer/Layer';
 import Scheduler from './Scheduler/Scheduler';
+import LoadingScreenCSS from '../utils/LoadingScreen.css';
+import LoadingScreenHTML from '../utils/LoadingScreen.html';
 
 /**
  * Constructs an Itowns View instance
@@ -46,6 +48,7 @@ function View(crs, viewerDiv, options = {}) {
     //   - options for the renderer to be created
     if (options.renderer && options.renderer.domElement) {
         engine = new c3DEngine(options.renderer);
+        options.disableLoadingScreen = true;
     } else {
         engine = new c3DEngine(viewerDiv, options.renderer);
     }
@@ -78,6 +81,33 @@ function View(crs, viewerDiv, options = {}) {
 
     if (__DEBUG__) {
         this.isDebugMode = true;
+    }
+
+    if (!options.disableLoadingScreen) {
+        // loading screen
+        viewerDiv.insertAdjacentHTML('beforeend', LoadingScreenHTML);
+        const node = document.createElement('style');
+        node.innerHTML = LoadingScreenCSS;
+        document.body.appendChild(node);
+
+        const view = this;
+        // auto-hide in 3 sec or if view is loaded
+        const hideLoader = () => {
+            const parent = document.getElementById('itowns-loader');
+            if (!parent || parent.className.indexOf('itowns-invisible') >= 0) {
+                return;
+            }
+            parent.className += 'itowns-invisible';
+            parent.querySelector('#itowns-loader #spinner').className += 'itowns-invisible';
+
+            setTimeout(() => {
+                viewerDiv.removeChild(parent);
+            }, 1000);
+
+            view.mainLoop.removeEventListener(hideLoader);
+        };
+        this.mainLoop.addEventListener('command-queue-empty', hideLoader);
+        setTimeout(hideLoader, 3000);
     }
 }
 

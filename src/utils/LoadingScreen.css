@@ -1,0 +1,80 @@
+#itowns-loader #spinner {
+  border: 0.13em solid #404e73;
+  border-top: 0.13em solid #7ea8c5;
+  border-radius: 50%;
+  width: 0.3em;
+  height: 0.3em;
+  animation: spin 2s linear infinite;
+  margin-left: 0em;
+  margin-right: 0.05em;
+  margin-top: 0.28em;
+  float: left;
+}
+
+#itowns-loader span {
+  color: #404e73;
+  font-family: Arial;
+  font-weight: bold;
+  float: left;
+  text-decoration: none;
+  animation: colorchange 2s infinite;
+}
+#itowns-loader .c2 {
+  animation-delay: 0.35s;
+}
+
+#itowns-loader .c4 {
+  animation-delay: 1.05s;
+}
+#itowns-loader .c5 {
+  animation-delay: 1.4s;
+}
+#itowns-loader .c6 {
+  animation-delay: 1.7s;
+}
+
+@keyframes colorchange
+{
+  100% {color: #404e73;}
+  80%  {color: #404e73;}
+  50%  {color: #7ea8c5;}
+  20%  {color: #404e73;}
+  0%   {color: #404e73;}
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+#itowns-loader {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+#itowns-loader > .text {
+  text-align: center;
+  font-size: 5em;
+}
+
+.itowns-invisible {
+  -webkit-transition: opacity 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53);
+  -moz-transition: opacity 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53);
+  -ms-transition: opacity 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53);
+  -o-transition: opacity 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53);
+  opacity: 0;
+  pointer-events: none;
+}
+/* disable dat.GUI when the loading screen is displayed */
+#itowns-loader + .dg {
+    display: none;
+}

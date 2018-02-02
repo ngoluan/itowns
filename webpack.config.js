@@ -61,6 +61,8 @@ module.exports = {
             },
             commonConfig.glslLoader,
             commonConfig.jsonLoader,
+            commonConfig.cssLoader,
+            commonConfig.htmlLoader,
         ],
     },
     devServer: {
