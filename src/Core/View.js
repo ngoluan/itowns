@@ -94,28 +94,29 @@ function View(crs, viewerDiv, options = {}) {
             loadingScreenContainer = document.getElementById('itowns-loader');
         } else if (typeof (options.loadingScreen) === 'string') {
             loadingScreenContainer = document.getElementById(options.loadingScreen);
-        } else if (options.loadingScreen instanceof (HTMLElement)) {
+        } else if (options.loadingScreen instanceof (Element)) {
             loadingScreenContainer = options.loadingScreen;
         } else {
             throw new Error('Invalid value for options.loadingScreen. Expected: false, string or HTMLElement');
         }
 
-        const view = this;
         // auto-hide in 3 sec or if view is loaded
         const hideLoader = () => {
             if (!loadingScreenContainer) {
                 return;
             }
-
             loadingScreenContainer.style.opacity = 0;
             loadingScreenContainer.style.pointerEvents = 'none';
             loadingScreenContainer.style.transition = 'opacity 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53)';
 
-            setTimeout(() => {
-                viewerDiv.removeChild(loadingScreenContainer);
-            }, 1000);
+            const elt = loadingScreenContainer;
 
-            view.mainLoop.removeEventListener(hideLoader);
+            loadingScreenContainer.addEventListener('transitionend', () => {
+                viewerDiv.removeChild(elt);
+            });
+            loadingScreenContainer = null;
+
+            this.mainLoop.removeEventListener(hideLoader);
         };
         this.mainLoop.addEventListener('command-queue-empty', hideLoader);
         setTimeout(hideLoader, 3000);
