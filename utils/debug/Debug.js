@@ -1,3 +1,4 @@
+import { CameraHelper } from 'three';
 import Coordinates from '../../src/Core/Geographic/Coordinates';
 import ThreeStatsChart from './charts/ThreeStatsChart';
 
@@ -28,6 +29,7 @@ function Debug(view, datDebugTool, chartDivContainer) {
     this.charts.push(new ThreeStatsChart('three-info', view.mainLoop.gfxEngine.renderer));
 
     const charts = this.charts;
+    const tileLayer = view.tileLayer || view.wgs84TileLayer || view.baseLayer;
 
     function debugChartUpdate(updateDuration) {
         const displayed = chartDivContainer.style.display != 'none';
@@ -40,6 +42,8 @@ function Debug(view, datDebugTool, chartDivContainer) {
     const state = {
         displayCharts: false,
         eventsDebug: false,
+        debugCameraWindow: true,
+        freeze: false,
     };
 
     // charts
@@ -48,6 +52,22 @@ function Debug(view, datDebugTool, chartDivContainer) {
             chartDivContainer.style.display = 'flex';
         } else {
             chartDivContainer.style.display = 'none';
+        }
+    });
+
+    gui.add(state, 'debugCameraWindow').name('debug Camera').onChange(() => {
+        view.notifyChange(true);
+    });
+
+
+    let update = tileLayer.update;
+    gui.add(state, 'freeze').name('freeze update').onChange((newValue) => {
+        if (newValue) {
+            update = tileLayer.update;
+            tileLayer.update = () => {};
+        } else {
+            tileLayer.update = update;
+            view.notifyChange(true);
         }
     });
 
@@ -94,6 +114,73 @@ function Debug(view, datDebugTool, chartDivContainer) {
         const duration = Date.now() - before;
         // debug graphs update
         debugChartUpdate(duration);
+    };
+
+    // Camera debug
+    const helper = new CameraHelper(view.camera.camera3D);
+    const debugCamera = view.camera.camera3D.clone();
+    debugCamera.fov *= 1.5;
+    debugCamera.updateProjectionMatrix();
+    const g = view.mainLoop.gfxEngine;
+    const r = g.renderer;
+    let fogDistance = view.fogDistance;
+    helper.visible = false;
+    view.scene.add(helper);
+
+    function tileDisplay(obj) {
+        if (obj.setFog && fogDistance) {
+            obj.setFog(fogDistance);
+        }
+    }
+
+    view.render = function render() {
+        g.renderView(view);
+        if (state.debugCameraWindow && debugCamera) {
+            const size = { x: g.width * 0.2, y: g.height * 0.2 };
+            debugCamera.aspect = size.x / size.y;
+            const camera = view.camera.camera3D;
+            const coord = new Coordinates(view.referenceCrs, camera.position).as(tileLayer.extent._crs);
+            const altitude = 1.5 * coord._values[2];
+            if (altitude > 1) {
+                coord._values[2] = altitude;
+                const position = coord.as(view.referenceCrs).xyz();
+                camera.worldToLocal(position);
+                position.z += altitude;
+                camera.localToWorld(position);
+                debugCamera.position.copy(position);
+                const lookAt = view.camera.camera3D.position.clone();
+                camera.worldToLocal(lookAt);
+                lookAt.z -= altitude * 1.5;
+                camera.localToWorld(lookAt);
+                debugCamera.lookAt(lookAt);
+            } else {
+                debugCamera.position.set(0, 0, 100);
+                camera.localToWorld(debugCamera.position);
+                debugCamera.lookAt(camera.position);
+            }
+
+            debugCamera.updateProjectionMatrix();
+            if (view.atmosphere) {
+                view.atmosphere.visible = false;
+            }
+            fogDistance = 10e10;
+            for (const obj of tileLayer.level0Nodes) {
+                obj.traverseVisible(tileDisplay);
+            }
+            helper.visible = true;
+            helper.updateMatrixWorld(true);
+            r.setViewport(g.width - size.x, 0, size.x, size.y);
+            r.clearDepth();
+            r.render(view.scene, debugCamera);
+            helper.visible = false;
+            if (view.atmosphere) {
+                view.atmosphere.visible = true;
+            }
+            fogDistance = view.fogDistance;
+            for (const obj of tileLayer.level0Nodes) {
+                obj.traverseVisible(tileDisplay);
+            }
+        }
     };
 }
 
