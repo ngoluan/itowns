@@ -47,7 +47,6 @@
   100% { transform: rotate(360deg); }
 }
 
-
 #itowns-loader {
   position: absolute;
   top: 0;
@@ -61,19 +60,14 @@
   justify-content: center;
   align-items: center;
 }
+
 #itowns-loader > .text {
+  width: unset;
+  height: unset;
   text-align: center;
   font-size: 5em;
 }
 
-.itowns-invisible {
-  -webkit-transition: opacity 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53);
-  -moz-transition: opacity 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53);
-  -ms-transition: opacity 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53);
-  -o-transition: opacity 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53);
-  opacity: 0;
-  pointer-events: none;
-}
 /* disable dat.GUI when the loading screen is displayed */
 #itowns-loader + .dg {
     display: none;

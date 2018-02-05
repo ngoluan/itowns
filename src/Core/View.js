@@ -48,7 +48,6 @@ function View(crs, viewerDiv, options = {}) {
     //   - options for the renderer to be created
     if (options.renderer && options.renderer.domElement) {
         engine = new c3DEngine(options.renderer);
-        options.disableLoadingScreen = true;
     } else {
         engine = new c3DEngine(viewerDiv, options.renderer);
     }
@@ -83,25 +82,36 @@ function View(crs, viewerDiv, options = {}) {
         this.isDebugMode = true;
     }
 
-    if (!options.disableLoadingScreen) {
-        // loading screen
-        viewerDiv.insertAdjacentHTML('beforeend', LoadingScreenHTML);
-        const node = document.createElement('style');
-        node.innerHTML = LoadingScreenCSS;
-        document.body.appendChild(node);
+    if (options.loadingScreen !== false) {
+        let loadingScreenContainer;
+        if (!options.loadingScreen || options.loadingScreen === 'itowns') {
+            const node = document.createElement('style');
+            node.innerHTML = LoadingScreenCSS;
+            document.body.appendChild(node);
+            // loading screen
+            viewerDiv.insertAdjacentHTML('beforeend', LoadingScreenHTML);
+            loadingScreenContainer = document.getElementById('itowns-loader');
+        } else if (typeof (options.loadingScreen) === 'string') {
+            loadingScreenContainer = document.getElementById(options.loadingScreen);
+        } else if (options.loadingScreen instanceof (HTMLElement)) {
+            loadingScreenContainer = options.loadingScreen;
+        } else {
+            throw new Error('Invalid value for options.loadingScreen. Expected: false, string or HTMLElement');
+        }
 
         const view = this;
         // auto-hide in 3 sec or if view is loaded
         const hideLoader = () => {
-            const parent = document.getElementById('itowns-loader');
-            if (!parent || parent.className.indexOf('itowns-invisible') >= 0) {
+            if (!loadingScreenContainer) {
                 return;
             }
-            parent.className += 'itowns-invisible';
-            parent.querySelector('#itowns-loader #spinner').className += 'itowns-invisible';
+
+            loadingScreenContainer.style.opacity = 0;
+            loadingScreenContainer.style.pointerEvents = 'none';
+            loadingScreenContainer.style.transition = 'opacity 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53)';
 
             setTimeout(() => {
-                viewerDiv.removeChild(parent);
+                viewerDiv.removeChild(loadingScreenContainer);
             }, 1000);
 
             view.mainLoop.removeEventListener(hideLoader);
