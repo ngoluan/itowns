@@ -109,13 +109,10 @@ function View(crs, viewerDiv, options = {}) {
             loadingScreenContainer.style.pointerEvents = 'none';
             loadingScreenContainer.style.transition = 'opacity 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53)';
 
-            const elt = loadingScreenContainer;
-
-            loadingScreenContainer.addEventListener('transitionend', () => {
-                viewerDiv.removeChild(elt);
+            loadingScreenContainer.addEventListener('transitionend', (e) => {
+                viewerDiv.removeChild(e.target);
             });
             loadingScreenContainer = null;
-
             this.mainLoop.removeEventListener(hideLoader);
         };
         this.mainLoop.addEventListener('command-queue-empty', hideLoader);
