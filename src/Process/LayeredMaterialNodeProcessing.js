@@ -208,7 +208,6 @@ export function updateLayeredMaterialNodeImagery(context, layer, node) {
         return;
     }
 
-
     // does this tile needs a new texture?
     if (layer.canTileTextureBeImproved) {
         // if the layer has a custom method -> use it
@@ -227,16 +226,21 @@ export function updateLayeredMaterialNodeImagery(context, layer, node) {
         return;
     }
 
+    const failureParams = node.layerUpdateState[layer.id].failureParams;
     const currentLevel = node.material.getColorLayerLevelById(layer.id);
     const bestLevel = node.getCoordsForLayer(layer)[0].zoom || node.level;
-    let targetLevel = node.layerUpdateState[layer.id].targetLevel ? node.layerUpdateState[layer.id].targetLevel - 1 :
+    const failedFetchLevel = failureParams ? failureParams.targetLevel : undefined;
+    // if there has already been a failed fetch on previous level
+    // then try at the lower level
+    const targetLevel = failedFetchLevel ? failedFetchLevel - 1 :
         chooseNextLevelToFetch(layer.updateStrategy.type, node, bestLevel, currentLevel, layer);
-
-    targetLevel = Math.min(layer.options.zoom.max, targetLevel);
-
     if (targetLevel <= currentLevel) {
         return;
     }
+
+    // Retry tileInsideLimit because you must check with the targetLevel
+    // if the first test layer.tileInsideLimit returns that it is out of limits
+    // and the node inherits from its parent, then it'll still make a command to fetch texture.
     if (!layer.tileInsideLimit(node, layer, targetLevel)) {
         node.layerUpdateState[layer.id].noMoreUpdatePossible();
         return;
@@ -281,16 +285,22 @@ export function updateLayeredMaterialNodeImagery(context, layer, node) {
                     // eslint-disable-next-line no-console
                     console.warn(`Imagery texture update error for ${node}: ${err}`);
                 }
-                const definitiveError = node.layerUpdateState[layer.id].errorCount > MAX_RETRY;
-                if (layer.protocol == 'wmts' || layer.protocol == 'wmtsc') {
-                    // keep the targetLevel that caused an error
-                    node.layerUpdateState[layer.id].targetLevel = targetLevel;
-                }
-                node.layerUpdateState[layer.id].failure(Date.now(), definitiveError);
-                if (!definitiveError) {
-                    window.setTimeout(() => {
-                        context.view.notifyChange(false, node);
-                    }, node.layerUpdateState[layer.id].secondsUntilNextTry() * 1000);
+                const nextLevelToTry = targetLevel - 1;
+                const pFailureParams = node.layerUpdateState[layer.id].failureParams;
+                const pFailureLevel = pFailureParams ? pFailureParams.targetLevel : undefined;
+                // if next level to try is different that previous failure then notify change to try a new fetch
+                if (nextLevelToTry != pFailureLevel) {
+                    node.layerUpdateState[layer.id].retry(Date.now(), { targetLevel });
+                    context.view.notifyChange(false, node);
+                } else {
+                // otherwise we have identical successive errors so failureParams will be at undefined
+                    const definitiveError = node.layerUpdateState[layer.id].errorCount > MAX_RETRY;
+                    node.layerUpdateState[layer.id].failure(Date.now(), definitiveError);
+                    if (!definitiveError) {
+                        window.setTimeout(() => {
+                            context.view.notifyChange(false, node);
+                        }, node.layerUpdateState[layer.id].secondsUntilNextTry() * 1000);
+                    }
                 }
             }
         });

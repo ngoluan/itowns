@@ -47,16 +47,22 @@ function _dichotomy(nodeLevel, currentLevel, options) {
 }
 
 export function chooseNextLevelToFetch(strategy, node, nodeLevel, currentLevel, layer) {
+    let nextLevelToFetch;
+    const maxZoom = layer.options.zoom ? layer.options.zoom.max : Infinity;
     switch (strategy) {
         case STRATEGY_GROUP:
-            return _group(nodeLevel, currentLevel, layer.updateStrategy.options);
+            nextLevelToFetch = _group(nodeLevel, currentLevel, layer.updateStrategy.options);
+            break;
         case STRATEGY_PROGRESSIVE:
-            return _progressive(nodeLevel, currentLevel, layer.updateStrategy.options);
+            nextLevelToFetch = _progressive(nodeLevel, currentLevel, layer.updateStrategy.options);
+            break;
         case STRATEGY_DICHOTOMY:
-            return _dichotomy(nodeLevel, currentLevel, layer.options);
+            nextLevelToFetch = _dichotomy(nodeLevel, currentLevel, layer.options);
+            break;
         // default strategy
         case STRATEGY_MIN_NETWORK_TRAFFIC:
         default:
-            return _minimizeNetworkTraffic(node, nodeLevel, currentLevel);
+            nextLevelToFetch = _minimizeNetworkTraffic(node, nodeLevel, currentLevel);
     }
+    return Math.min(nextLevelToFetch, maxZoom);
 }

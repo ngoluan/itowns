@@ -52,6 +52,7 @@ LayerUpdateState.prototype.newTry = function newTry() {
 };
 
 LayerUpdateState.prototype.success = function success() {
+    this.failureParams = undefined;
     this.lastErrorTimestamp = 0;
     this.state = UPDATE_STATE.IDLE;
 };
@@ -61,9 +62,16 @@ LayerUpdateState.prototype.noMoreUpdatePossible = function noMoreUpdatePossible(
 };
 
 LayerUpdateState.prototype.failure = function failure(timestamp, definitive) {
+    this.failureParams = undefined;
     this.lastErrorTimestamp = timestamp;
     this.state = definitive ? UPDATE_STATE.DEFINITIVE_ERROR : UPDATE_STATE.ERROR;
     this.errorCount++;
+};
+
+LayerUpdateState.prototype.retry = function failure(timestamp, failureParams) {
+    this.failureParams = failureParams;
+    this.lastErrorTimestamp = timestamp;
+    this.state = UPDATE_STATE.IDLE;
 };
 
 LayerUpdateState.prototype.inError = function inError() {
