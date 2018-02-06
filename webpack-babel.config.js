@@ -11,8 +11,6 @@ module.exports = {
         rules: [
             commonConfig.glslLoader,
             commonConfig.jsonLoader,
-            commonConfig.cssLoader,
-            commonConfig.htmlLoader,
         ],
     },
 };

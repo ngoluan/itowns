@@ -33,8 +33,7 @@
   animation-delay: 1.7s;
 }
 
-@keyframes colorchange
-{
+@keyframes colorchange {
   100% {color: #404e73;}
   80%  {color: #404e73;}
   50%  {color: #7ea8c5;}
@@ -70,6 +69,11 @@
 
 /* disable dat.GUI when the loading screen is displayed */
 #itowns-loader + .dg {
-    display: none;
+  display: none;
 }
 
+#itowns-loader.invisible {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s cubic-bezier(0.55, 0.085, 0.68, 0.53);
+}

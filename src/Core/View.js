@@ -6,8 +6,6 @@ import c3DEngine from '../Renderer/c3DEngine';
 import { STRATEGY_MIN_NETWORK_TRAFFIC } from './Layer/LayerUpdateStrategy';
 import { GeometryLayer, Layer, defineLayerProperty } from './Layer/Layer';
 import Scheduler from './Scheduler/Scheduler';
-import LoadingScreenCSS from '../utils/LoadingScreen.css';
-import LoadingScreenHTML from '../utils/LoadingScreen.html';
 
 /**
  * Constructs an Itowns View instance
@@ -48,7 +46,6 @@ function View(crs, viewerDiv, options = {}) {
     //   - options for the renderer to be created
     if (options.renderer && options.renderer.domElement) {
         engine = new c3DEngine(options.renderer);
-        options.loadingScreen = false;
     } else {
         engine = new c3DEngine(viewerDiv, options.renderer);
     }
@@ -81,42 +78,6 @@ function View(crs, viewerDiv, options = {}) {
 
     if (__DEBUG__) {
         this.isDebugMode = true;
-    }
-
-    if (options.loadingScreen !== false) {
-        let loadingScreenContainer;
-        if (!options.loadingScreen || options.loadingScreen === 'itowns') {
-            const node = document.createElement('style');
-            node.innerHTML = LoadingScreenCSS;
-            document.body.appendChild(node);
-            // loading screen
-            viewerDiv.insertAdjacentHTML('beforeend', LoadingScreenHTML);
-            loadingScreenContainer = document.getElementById('itowns-loader');
-        } else if (typeof (options.loadingScreen) === 'string') {
-            loadingScreenContainer = document.getElementById(options.loadingScreen);
-        } else if (options.loadingScreen instanceof (Element)) {
-            loadingScreenContainer = options.loadingScreen;
-        } else {
-            throw new Error('Invalid value for options.loadingScreen. Expected: false, string or HTMLElement');
-        }
-
-        // auto-hide in 3 sec or if view is loaded
-        const hideLoader = () => {
-            if (!loadingScreenContainer) {
-                return;
-            }
-            loadingScreenContainer.style.opacity = 0;
-            loadingScreenContainer.style.pointerEvents = 'none';
-            loadingScreenContainer.style.transition = 'opacity 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53)';
-
-            loadingScreenContainer.addEventListener('transitionend', (e) => {
-                viewerDiv.removeChild(e.target);
-            });
-            loadingScreenContainer = null;
-            this.mainLoop.removeEventListener(hideLoader);
-        };
-        this.mainLoop.addEventListener('command-queue-empty', hideLoader);
-        setTimeout(hideLoader, 3000);
     }
 }
 

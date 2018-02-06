@@ -63,4 +63,5 @@ function showPointcloud(serverUrl, fileName) {
 
     itowns.Fetcher.json('./layers/JSONLayers/IGN_MNT_HIGHRES.json').then(addLayerCb);
     itowns.Fetcher.json('./layers/JSONLayers/Ortho.json').then(addLayerCb);
+    hideLoadingScreenWhenReady(view, document.getElementById('itowns-loader'));
 }

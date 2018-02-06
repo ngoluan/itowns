@@ -182,3 +182,4 @@ view.addLayer({
     },
 }, view.tileLayer);
 exports.view = view;
+hideLoadingScreenWhenReady(view, document.getElementById('itowns-loader'));

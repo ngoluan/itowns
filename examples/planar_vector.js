@@ -111,3 +111,4 @@ new itowns.PlanarControls(view, {});
 view.notifyChange(true);
 
 exports.view = view;
+hideLoadingScreenWhenReady(view, document.getElementById('itowns-loader'));

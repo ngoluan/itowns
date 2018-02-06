@@ -56,3 +56,4 @@ itowns.Fetcher.json('./layers/JSONLayers/IGN_MNT.json').then(addLayerCb);
 
 exports.globeView = globeView;
 exports.postprocessScene = postprocessScene;
+hideLoadingScreenWhenReady(globeView, document.getElementById('itowns-loader'));

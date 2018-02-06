@@ -100,3 +100,4 @@ viewerDiv.addEventListener('mouseup', function mouseUp() {
 
 // Request redraw
 view.notifyChange(true);
+hideLoadingScreenWhenReady(view, document.getElementById('itowns-loader'));

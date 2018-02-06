@@ -59,10 +59,21 @@
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="GUI/dat.gui/dat.gui.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/loadingscreen.css">
     </head>
     <body>
-        <div id="viewerDiv" class="viewer">
+        <div id="viewerDiv">
             <span id="tooltipDiv" class="tooltip"></span>
+            <div id="itowns-loader">
+                 <div class="text">
+                   <span class="c1">i</span>
+                   <span class="c2">T</span>
+                   <div id="spinner" class="c3"></div>
+                   <span class="c4">w</span>
+                   <span class="c5">n</span>
+                   <span class="c6">s</span></div>
+                </div>
+            </div>
         </div>
         <script src="GUI/GuiTools.js"></script>
         <script src="../dist/itowns.js"></script>
@@ -70,6 +81,7 @@
             var renderer;
             var exports = {};
         </script>
+        <script src="js/loadingscreen.js"></script>
         <script src="globe_vector.js"></script>
         <script src="FeatureToolTip.js"></script>
         <script type="text/javascript">
@@ -89,9 +101,8 @@
 
                     new ToolTip(globeView, document.getElementById('viewerDiv'), document.getElementById('tooltipDiv'));
                 });
-
-
             });
+            hideLoadingScreenWhenReady(globeView, document.getElementById('itowns-loader'));
         </script>
     </body>
 </html>

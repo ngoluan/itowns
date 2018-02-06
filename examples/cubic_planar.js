@@ -145,5 +145,5 @@ controls.addEventListener('change', function _() { view.notifyChange(true); });
 
 // Request redraw
 view.notifyChange(true);
-
+hideLoadingScreenWhenReady(view, document.getElementById('itowns-loader'));
 exports.view = view;
