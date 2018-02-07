@@ -188,6 +188,12 @@ export function updateLayeredMaterialNodeImagery(context, layer, node) {
 
             initNodeImageryTexturesFromParent(node, node.parent, layer);
         }
+
+        const minLevel = layer.options.zoom ? layer.options.zoom.min : 0;
+        if (node.material.getColorLayerLevelById(layer.id) >= minLevel) {
+            context.view.notifyChange(false, node);
+            return;
+        }
     }
 
     // Node is hidden, no need to update it
@@ -303,6 +309,11 @@ export function updateLayeredMaterialNodeElevation(context, layer, node) {
         node.layerUpdateState[layer.id] = new LayerUpdateState();
         initNodeElevationTextureFromParent(node, node.parent, layer);
         currentElevation = material.getElevationLayerLevel();
+        const minLevel = layer.options.zoom ? layer.options.zoom.min : 0;
+        if (currentElevation >= minLevel) {
+            context.view.notifyChange(false, node);
+            return;
+        }
     }
 
     // Try to update
