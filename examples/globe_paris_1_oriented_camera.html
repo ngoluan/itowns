@@ -47,7 +47,7 @@
             var renderer;
             var exports = {};
         </script>
-        <script src="globe_li3ds_1_oriented_camera.js"></script>
+        <script src="globe_paris_1_oriented_camera.js"></script>
         <script type="text/javascript">
             /* global itowns, document, GuiTools, globeView, promises */
             var menuGlobe = new GuiTools('menuDiv');
@@ -71,35 +71,6 @@
                         }
                     }
                 });
-
-            for (const layer of globeView.getLayers()) {
-                if (layer.id === 'WFS Buildings') {
-                    layer.whenReady.then( function _(layer) {
-                        var gui = debug.GeometryDebug.createGeometryDebugUI(menuGlobe.gui, globeView, layer);
-                        debug.GeometryDebug.addWireFrameCheckbox(gui, globeView, layer);
-                    });
-                }
-            }
-
-            // CA MARCHE PAS MAIS CA DEVRAIT
-            // var folder = menuGlobe.gui.addFolder('ControlsSwitcher');
-            // folder.add({ immersive: true }, 'immersive').onChange(function switchMode(value) {
-        
-            //     globeView.camera.camera3D = layer.camera;
-            //     globeView.notifyChange(true);
-            // });
-
-            // CA MARCHE MAIS PAS INTERACTIF
-            // layer.camera.layers = globeView.camera.camera3D.layers;
-            // globeView.camera.camera3D = layer.camera;
-            // globeView.notifyChange(true);
-
-// CA C'est RIEN
-// globeView.camera.camera3D.matrixWorld.copy(layer.camera.matrixWorld);
-// globeView.camera.camera3D.projectionMatrix.copy(layer.camera.projectionMatrix);
-// globeView.camera.update(globeView.camera.width, globeView.camera.height);
-                
-
             });
             const d = new debug.Debug(globeView, menuGlobe.gui);
             debug.createTileDebugUI(menuGlobe.gui, globeView, globeView.wgs84TileLayer, d);
