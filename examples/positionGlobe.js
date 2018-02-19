@@ -81,5 +81,3 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, function 
         globeView.controls.setTilt(60, true);
     });
 });
-
-hideLoadingScreenWhenReady(globeView, document.getElementById('itowns-loader'));

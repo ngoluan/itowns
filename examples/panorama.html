@@ -27,24 +27,12 @@
         </style>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" type="text/css" href="css/loadingscreen.css">
     </head>
     <body>
-        <div id="viewerDiv">
-            <div id="itowns-loader">
-                 <div class="text">
-                   <span class="c1">i</span>
-                   <span class="c2">T</span>
-                   <div id="spinner" class="c3"></div>
-                   <span class="c4">w</span>
-                   <span class="c5">n</span>
-                   <span class="c6">s</span></div>
-                </div>
-            </div>
-        </div>
+        <div id="viewerDiv"></div>
 
         <script src="../dist/itowns.js"></script>
-        <script src="js/loadingscreen.js"></script>
+
         <script src="../dist/debug.js"></script>
         <script src="GUI/dat.gui/dat.gui.min.js"></script>
         <script type="text/javascript">
@@ -95,6 +83,7 @@
                     index ++;
                 }
                 view.camera.camera3D.far = 10000;
+                view.notifyChange(true);
 
                 // Setup debug menu
                 var gui = new dat.GUI();
@@ -118,10 +107,10 @@
                     layers[activeIndex].visible = true;
                     view.notifyChange(true);
                 });
-
                 window.view = view;
-                hideLoadingScreenWhenReady(view, document.getElementById('itowns-loader'));
+
             });
         </script>
+
     </body>
 </html>

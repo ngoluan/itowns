@@ -96,4 +96,3 @@ Promise.all(promises).then(function _() { globeView.render = splitRendering; });
 
 exports.view = globeView;
 exports.initialPosition = positionOnGlobe;
-hideLoadingScreenWhenReady(view, document.getElementById('itowns-loader'));

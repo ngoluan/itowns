@@ -18,4 +18,20 @@ module.exports = {
         ],
         loader: 'raw-loader',
     },
+    cssLoader: {
+        // please consider modifying corresponding loaders in webpack-babel.config.js too
+        test: /\.css$/,
+        include: [
+            path.resolve(__dirname, 'src'),
+        ],
+        loader: 'raw-loader',
+    },
+    htmlLoader: {
+        // please consider modifying corresponding loaders in webpack-babel.config.js too
+        test: /\.html$/,
+        include: [
+            path.resolve(__dirname, 'src'),
+        ],
+        loader: 'raw-loader',
+    },
 };
