@@ -5,10 +5,12 @@
   width: 0.3em;
   height: 0.3em;
   animation: spin 2s linear infinite;
-  margin-left: 0em;
+  /*margin-left: 0em;
   margin-right: 0.05em;
   margin-top: 0.28em;
-  float: left;
+  float: left;*/
+  display: inline-block;
+  vertical-align: middle;
 }
 
 #itowns-loader span {
@@ -59,13 +61,14 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
+
+  font-size: 5em;
 }
 
 #itowns-loader > .text {
   width: unset;
   height: unset;
   text-align: center;
-  font-size: 5em;
 }
 
 /* disable dat.GUI when the loading screen is displayed */
