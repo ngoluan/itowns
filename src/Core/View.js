@@ -85,10 +85,11 @@ function View(crs, viewerDiv, options = {}) {
 
     if (options.loadingScreen !== false) {
         let loadingScreenContainer;
+        let styleNode;
         if (!options.loadingScreen || options.loadingScreen === 'itowns') {
-            const node = document.createElement('style');
-            node.innerHTML = LoadingScreenCSS;
-            document.body.appendChild(node);
+            styleNode = document.createElement('style');
+            styleNode.innerHTML = LoadingScreenCSS;
+            document.body.appendChild(styleNode);
             // loading screen
             viewerDiv.insertAdjacentHTML('beforeend', LoadingScreenHTML);
             loadingScreenContainer = document.getElementById('itowns-loader');
@@ -110,6 +111,7 @@ function View(crs, viewerDiv, options = {}) {
             loadingScreenContainer.style.transition = 'opacity 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53)';
 
             loadingScreenContainer.addEventListener('transitionend', (e) => {
+                document.body.removeChild(styleNode);
                 viewerDiv.removeChild(e.target);
             });
             loadingScreenContainer = null;

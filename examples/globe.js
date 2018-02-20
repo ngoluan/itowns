@@ -28,6 +28,7 @@ if (!renderer) {
         // Don't instance default controls since miniview's camera will be synced
         // on the main view's one (see globeView.addFrameRequester)
         noControls: true,
+        loadingScreen: false,
     });
 
     // Set a 0 alpha clear value (instead of the default '1')

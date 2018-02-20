@@ -69,7 +69,7 @@
 }
 
 /* disable dat.GUI when the loading screen is displayed */
-#itowns-loader + .dg {
+#itowns-loader + .dg,
+.dg.ac {
     display: none;
 }
-
