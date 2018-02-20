@@ -5,10 +5,16 @@
   width: 0.3em;
   height: 0.3em;
   animation: spin 2s linear infinite;
-  /*margin-left: 0em;
-  margin-right: 0.05em;
-  margin-top: 0.28em;
-  float: left;*/
+}
+
+#itowns-loader:before {
+  content: "";
+  display: inline-block;
+  vertical-align: middle;
+  height: 100%;
+}
+
+#itowns-loader div {
   display: inline-block;
   vertical-align: middle;
 }
@@ -17,7 +23,6 @@
   color: #404e73;
   font-family: Arial;
   font-weight: bold;
-  float: left;
   text-decoration: none;
   animation: colorchange 2s infinite;
 }
@@ -63,12 +68,6 @@
   align-items: center;
 
   font-size: 5em;
-}
-
-#itowns-loader > .text {
-  width: unset;
-  height: unset;
-  text-align: center;
 }
 
 /* disable dat.GUI when the loading screen is displayed */
