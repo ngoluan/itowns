@@ -1,13 +1,18 @@
 /* global window, requestAnimationFrame */
 import { Scene, EventDispatcher, Vector2 } from 'three';
 import Camera from '../Renderer/Camera';
-import MainLoop from './MainLoop';
+import MainLoop, { MAIN_LOOP_EVENTS } from './MainLoop';
 import c3DEngine from '../Renderer/c3DEngine';
 import { STRATEGY_MIN_NETWORK_TRAFFIC } from './Layer/LayerUpdateStrategy';
 import { GeometryLayer, Layer, defineLayerProperty } from './Layer/Layer';
 import Scheduler from './Scheduler/Scheduler';
 import LoadingScreenCSS from '../utils/LoadingScreen.css';
 import LoadingScreenHTML from '../utils/LoadingScreen.html';
+
+export const VIEW_EVENTS = {
+    INITIALIZED: 'view-initialized',
+};
+
 
 /**
  * Constructs an Itowns View instance
@@ -117,7 +122,7 @@ function View(crs, viewerDiv, options = {}) {
             loadingScreenContainer = null;
             this.mainLoop.removeEventListener(hideLoader);
         };
-        this.mainLoop.addEventListener('command-queue-empty', hideLoader);
+        this.addEventListener(VIEW_EVENTS.INITIALIZED, hideLoader);
         setTimeout(hideLoader, 3000);
     }
 }
@@ -358,8 +363,26 @@ View.prototype.addLayer = function addLayer(layer, parentLayer) {
         this.scene.add(layer.object3d);
     }
 
-    this.notifyChange(true);
-    return layer.whenReady;
+    if (this._readyCallback) {
+        this.removeFrameRequester(MAIN_LOOP_EVENTS.AFTER_RENDER, this._readyCallback);
+    }
+
+    return layer.whenReady.then((layer) => {
+        this.notifyChange(false);
+
+        if (!this._readyCallback) {
+            this._readyCallback = () => {
+                if (this.mainLoop.scheduler.commandsWaitingExecutionCount() == 0) {
+                    this.dispatchEvent({ type: VIEW_EVENTS.INITIALIZED });
+                    this.removeFrameRequester(MAIN_LOOP_EVENTS.AFTER_RENDER, this._readyCallback);
+                    this._readyCallback = null;
+                }
+            };
+            this.addFrameRequester(MAIN_LOOP_EVENTS.AFTER_RENDER, this._readyCallback);
+        }
+
+        return layer;
+    });
 };
 
 /**
