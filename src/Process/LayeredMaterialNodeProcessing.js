@@ -229,11 +229,10 @@ export function updateLayeredMaterialNodeImagery(context, layer, node) {
     const failureParams = node.layerUpdateState[layer.id].failureParams;
     const currentLevel = node.material.getColorLayerLevelById(layer.id);
     const bestLevel = node.getCoordsForLayer(layer)[0].zoom || node.level;
-    const failedFetchLevel = failureParams ? failureParams.targetLevel : undefined;
-    // if there has already been a failed fetch on previous level
-    // then try at the lower level
-    const targetLevel = failedFetchLevel ? failedFetchLevel - 1 :
-        chooseNextLevelToFetch(layer.updateStrategy.type, node, bestLevel, currentLevel, layer);
+    // if there's failureParams, compute the next level to try by dichotomic calculation
+    // dichotomy between the current level and last failed level
+    const nextLevelToTry = failureParams ? Math.ceil((currentLevel + failureParams.targetLevel) / 2) : undefined;
+    const targetLevel = nextLevelToTry || chooseNextLevelToFetch(layer.updateStrategy.type, node, bestLevel, currentLevel, layer);
     if (targetLevel <= currentLevel) {
         return;
     }
@@ -273,7 +272,11 @@ export function updateLayeredMaterialNodeImagery(context, layer, node) {
                 // and stop retrying after X attempts.
             }
 
-            node.layerUpdateState[layer.id].success();
+            if (!failureParams) {
+                node.layerUpdateState[layer.id].success();
+            } else {
+                node.layerUpdateState[layer.id].retry(Date.now(), { targetLevel: failureParams.targetLevel });
+            }
 
             return result;
         },
@@ -283,17 +286,15 @@ export function updateLayeredMaterialNodeImagery(context, layer, node) {
             } else {
                 if (__DEBUG__) {
                     // eslint-disable-next-line no-console
-                    console.warn(`Imagery texture update error for ${node}: ${err}`);
+                    // console.warn(`Imagery texture update error for ${node}: ${err}`);
                 }
-                const nextLevelToTry = targetLevel - 1;
-                const pFailureParams = node.layerUpdateState[layer.id].failureParams;
-                const pFailureLevel = pFailureParams ? pFailureParams.targetLevel : undefined;
-                // if next level to try is different that previous failure then notify change to try a new fetch
-                if (nextLevelToTry != pFailureLevel) {
+
+                // try next level if a dichotomic research makes sense
+                if (currentLevel != targetLevel - 1) {
                     node.layerUpdateState[layer.id].retry(Date.now(), { targetLevel });
                     context.view.notifyChange(false, node);
                 } else {
-                // otherwise we have identical successive errors so failureParams will be at undefined
+                    // otherwise we have identical successive errors so failureParams will be at undefined
                     const definitiveError = node.layerUpdateState[layer.id].errorCount > MAX_RETRY;
                     node.layerUpdateState[layer.id].failure(Date.now(), definitiveError);
                     if (!definitiveError) {

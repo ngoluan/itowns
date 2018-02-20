@@ -58,6 +58,7 @@ LayerUpdateState.prototype.success = function success() {
 };
 
 LayerUpdateState.prototype.noMoreUpdatePossible = function noMoreUpdatePossible() {
+    this.failureParams = undefined;
     this.state = UPDATE_STATE.FINISHED;
 };
 
