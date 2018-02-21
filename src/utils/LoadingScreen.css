@@ -1,59 +1,35 @@
-#itowns-loader #spinner {
-  border: 0.13em solid #404e73;
-  border-top: 0.13em solid #7ea8c5;
-  border-radius: 50%;
-  width: 0.3em;
-  height: 0.3em;
-  animation: spin 2s linear infinite;
-}
-
-#itowns-loader:before {
-  content: "";
-  display: inline-block;
-  vertical-align: middle;
-  height: 100%;
-}
-
-#itowns-loader div {
-  display: inline-block;
-  vertical-align: middle;
-}
-
 #itowns-loader span {
+    display: inline-block;
   color: #404e73;
   font-family: Arial;
   font-weight: bold;
   text-decoration: none;
-  animation: colorchange 2s infinite;
+  animation: colorchange 1s infinite alternate ease-in-out;
 }
 #itowns-loader .c2 {
-  animation-delay: 0.35s;
+  animation-delay: 0.1s;
 }
-
+#itowns-loader .c3 {
+  animation-delay: 0.2s;
+  margin-left: -0.12em;
+}
 #itowns-loader .c4 {
-  animation-delay: 1.05s;
+  animation-delay: 0.3s;
 }
 #itowns-loader .c5 {
-  animation-delay: 1.4s;
+  animation-delay: 0.40s;
 }
 #itowns-loader .c6 {
-  animation-delay: 1.7s;
+  animation-delay: 0.50s;
 }
 
 @keyframes colorchange
 {
-  100% {color: #404e73;}
-  80%  {color: #404e73;}
-  50%  {color: #7ea8c5;}
-  20%  {color: #404e73;}
-  0%   {color: #404e73;}
+  100% {color: #404e73; transform: translate(0, 0);}
+  50% {color: #404e73; transform: translate(0, 0);}
+  30%  {color: #7ea8c5; transform: translate(0, -.15em);}
+  0%   {color: #404e73; transform: translate(0, 0em);}
 }
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
 #itowns-loader {
   position: absolute;
   top: 0;
@@ -69,6 +45,7 @@
 
   font-size: 5em;
 }
+
 
 /* disable dat.GUI when the loading screen is displayed */
 #itowns-loader + .dg,
