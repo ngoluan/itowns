@@ -272,11 +272,13 @@ export function updateLayeredMaterialNodeImagery(context, layer, node) {
                 // and stop retrying after X attempts.
             }
 
-            if (!failureParams) {
-                node.layerUpdateState[layer.id].success();
-            } else {
-                node.layerUpdateState[layer.id].retry(Date.now(), { targetLevel: failureParams.targetLevel });
-            }
+            node.layerUpdateState[layer.id].success();
+
+            // if (!failureParams) {
+            //     node.layerUpdateState[layer.id].success();
+            // } else {
+            //     node.layerUpdateState[layer.id].retry(Date.now(), { targetLevel: failureParams.targetLevel });
+            // }
 
             return result;
         },
@@ -286,7 +288,7 @@ export function updateLayeredMaterialNodeImagery(context, layer, node) {
             } else {
                 if (__DEBUG__) {
                     // eslint-disable-next-line no-console
-                    // console.warn(`Imagery texture update error for ${node}: ${err}`);
+                    console.warn(`Imagery texture update error for ${node}: ${err}`);
                 }
 
                 // try next level if a dichotomic research makes sense
