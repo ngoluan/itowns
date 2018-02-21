@@ -273,13 +273,6 @@ export function updateLayeredMaterialNodeImagery(context, layer, node) {
             }
 
             node.layerUpdateState[layer.id].success();
-
-            // if (!failureParams) {
-            //     node.layerUpdateState[layer.id].success();
-            // } else {
-            //     node.layerUpdateState[layer.id].retry(Date.now(), { targetLevel: failureParams.targetLevel });
-            // }
-
             return result;
         },
         (err) => {
@@ -293,17 +286,15 @@ export function updateLayeredMaterialNodeImagery(context, layer, node) {
 
                 // try next level if a dichotomic research makes sense
                 if (currentLevel != targetLevel - 1) {
-                    node.layerUpdateState[layer.id].retry(Date.now(), { targetLevel });
+                    node.layerUpdateState[layer.id].failure(Date.now(), false, { targetLevel });
                     context.view.notifyChange(false, node);
                 } else {
                     // otherwise we have identical successive errors so failureParams will be at undefined
                     const definitiveError = node.layerUpdateState[layer.id].errorCount > MAX_RETRY;
                     node.layerUpdateState[layer.id].failure(Date.now(), definitiveError);
-                    if (!definitiveError) {
-                        window.setTimeout(() => {
-                            context.view.notifyChange(false, node);
-                        }, node.layerUpdateState[layer.id].secondsUntilNextTry() * 1000);
-                    }
+                    window.setTimeout(() => {
+                        context.view.notifyChange(false, node);
+                    }, node.layerUpdateState[layer.id].secondsUntilNextTry() * 1000);
                 }
             }
         });

@@ -31,6 +31,9 @@ LayerUpdateState.prototype.canTryUpdate = function canTryUpdate(timestamp) {
         }
         case UPDATE_STATE.ERROR:
         default: {
+            if (this.failureParams) {
+                return true;
+            }
             const errorDuration = this.secondsUntilNextTry() * 1000;
             return errorDuration <= (timestamp - this.lastErrorTimestamp);
         }
@@ -52,7 +55,6 @@ LayerUpdateState.prototype.newTry = function newTry() {
 };
 
 LayerUpdateState.prototype.success = function success() {
-    this.failureParams = undefined;
     this.lastErrorTimestamp = 0;
     this.state = UPDATE_STATE.IDLE;
 };
@@ -62,17 +64,11 @@ LayerUpdateState.prototype.noMoreUpdatePossible = function noMoreUpdatePossible(
     this.state = UPDATE_STATE.FINISHED;
 };
 
-LayerUpdateState.prototype.failure = function failure(timestamp, definitive) {
-    this.failureParams = undefined;
+LayerUpdateState.prototype.failure = function failure(timestamp, definitive, failureParams) {
+    this.failureParams = failureParams;
     this.lastErrorTimestamp = timestamp;
     this.state = definitive ? UPDATE_STATE.DEFINITIVE_ERROR : UPDATE_STATE.ERROR;
     this.errorCount++;
-};
-
-LayerUpdateState.prototype.retry = function failure(timestamp, failureParams) {
-    this.failureParams = failureParams;
-    this.lastErrorTimestamp = timestamp;
-    this.state = UPDATE_STATE.IDLE;
 };
 
 LayerUpdateState.prototype.inError = function inError() {
