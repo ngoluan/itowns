@@ -158,6 +158,7 @@ function _preprocessLayer(view, layer, provider) {
         defineLayerProperty(layer, 'frozen', false);
     } else if (layer.type == 'geometry' || layer.type == 'debug') {
         defineLayerProperty(layer, 'visible', true, () => _syncGeometryLayerVisibility(layer, view));
+        defineLayerProperty(layer, 'frozen', false);
         _syncGeometryLayerVisibility(layer, view);
 
         const changeOpacity = (o) => {
