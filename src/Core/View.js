@@ -291,6 +291,7 @@ View.prototype.addLayer = function addLayer(layer, parentLayer) {
         throw new Error(`Invalid id '${layer.id}': id already used`);
     }
 
+    layer.parentLayer = parentLayer;
     if (parentLayer && !layer.extent) {
         layer.extent = parentLayer.extent;
     }
