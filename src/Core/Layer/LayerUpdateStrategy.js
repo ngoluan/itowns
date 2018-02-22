@@ -46,22 +46,28 @@ function _dichotomy(nodeLevel, currentLevel, options) {
         Math.ceil((currentLevel + nodeLevel) / 2));
 }
 
-export function chooseNextLevelToFetch(strategy, node, nodeLevel, currentLevel, layer) {
+export function chooseNextLevelToFetch(strategy, node, nodeLevel, currentLevel, layer, failureParams) {
     let nextLevelToFetch;
     const maxZoom = layer.options.zoom ? layer.options.zoom.max : Infinity;
     switch (strategy) {
         case STRATEGY_GROUP:
+            nodeLevel = failureParams ? Math.ceil((currentLevel + failureParams.targetLevel) / 2) : nodeLevel;
             nextLevelToFetch = _group(nodeLevel, currentLevel, layer.updateStrategy.options);
             break;
-        case STRATEGY_PROGRESSIVE:
-            nextLevelToFetch = _progressive(nodeLevel, currentLevel, layer.updateStrategy.options);
+        case STRATEGY_PROGRESSIVE: {
+            nodeLevel = failureParams ? failureParams.targetLevel : nodeLevel;
+            const increment = failureParams ? -layer.updateStrategy.options.increment : layer.updateStrategy.options.increment;
+            nextLevelToFetch = _progressive(nodeLevel, currentLevel, { increment });
             break;
+        }
         case STRATEGY_DICHOTOMY:
+            nodeLevel = failureParams ? failureParams.targetLevel : nodeLevel;
             nextLevelToFetch = _dichotomy(nodeLevel, currentLevel, layer.options);
             break;
         // default strategy
         case STRATEGY_MIN_NETWORK_TRAFFIC:
         default:
+            nodeLevel = failureParams ? Math.ceil((currentLevel + failureParams.targetLevel) / 2) : nodeLevel;
             nextLevelToFetch = _minimizeNetworkTraffic(node, nodeLevel, currentLevel);
     }
     return Math.min(nextLevelToFetch, maxZoom);

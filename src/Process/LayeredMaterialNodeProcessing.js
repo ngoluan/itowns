@@ -229,10 +229,7 @@ export function updateLayeredMaterialNodeImagery(context, layer, node) {
     const failureParams = node.layerUpdateState[layer.id].failureParams;
     const currentLevel = node.material.getColorLayerLevelById(layer.id);
     const bestLevel = node.getCoordsForLayer(layer)[0].zoom || node.level;
-    // if there's failureParams, compute the next level to try by dichotomic calculation
-    // dichotomy between the current level and last failed level
-    const nextLevelToTry = failureParams ? Math.ceil((currentLevel + failureParams.targetLevel) / 2) : undefined;
-    const targetLevel = nextLevelToTry || chooseNextLevelToFetch(layer.updateStrategy.type, node, bestLevel, currentLevel, layer);
+    const targetLevel = chooseNextLevelToFetch(layer.updateStrategy.type, node, bestLevel, currentLevel, layer, failureParams);
     if (targetLevel <= currentLevel) {
         return;
     }
