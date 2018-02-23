@@ -15,6 +15,9 @@ describe('updateLayeredMaterialNodeImagery', function () {
 
     // Mock scheduler
     const context = {
+        view: {
+            notifyChange: () => true,
+        },
         scheduler: {
             commands: [],
             execute: (cmd) => {
@@ -75,6 +78,8 @@ describe('updateLayeredMaterialNodeImagery', function () {
         tile.material.indexOfColorLayer = () => 0;
         tile.material.isColorLayerDownscaled = () => true;
         tile.material.getColorLayerLevelById = () => 1;
+
+        updateLayeredMaterialNodeImagery(context, layer, tile);
         updateLayeredMaterialNodeImagery(context, layer, tile);
 
         assert.equal(context.scheduler.commands.length, 1);
